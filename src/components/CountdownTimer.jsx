@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { ProContext } from "../context/ProContext.jsx";
 
 export default function CountdownTimer({ duration, onExpire }) {
     const [timeLeft, setTimeLeft] = useState(duration);
-
+    const { pro, setPro } = useContext(ProContext);
     useEffect(() => {
         if (timeLeft <= 0) {
             onExpire();
@@ -24,12 +25,12 @@ export default function CountdownTimer({ duration, onExpire }) {
                 <div className='relative group inline-block mt-10'>
                     <i className='fa-solid fa-info-circle'></i>
                     <div
-                        className='absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 
+                        className='absolute bottom-full left-1/2 transform -translate-x-1/2 
               invisible group-hover:visible opacity-0 group-hover:opacity-100 
-              transition-opacity bg-black text-white text-[8px] rounded px-2 py-1 whitespace-nowrap z-10'
+              transition-opacity bg-black text-white text-[8px] rounded px-2 py-1  z-10 w-[150px] leading-snug'
                     >
-                        The Email in the email panel will be expired after 10
-                        minutes.
+                        The Email in the email panel will be expired after{" "}
+                        {pro ? "24 hours" : "10 minutes"}.
                     </div>
                 </div>
                 &#32; Time left:

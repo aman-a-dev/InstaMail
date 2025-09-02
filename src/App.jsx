@@ -8,8 +8,11 @@ import {
     getToken,
     fetchMessages
 } from "./services/mailtm";
-import { createEmail as createSonjj } from "./services/sonjj";
-
+import {
+    createEmail,
+    getInbox,
+    checkEmailStatus
+} from "./services/getTestMail";
 import EmailDisplay from "./components/EmailDisplay";
 import InboxPanel from "./components/InboxPanel";
 import CountdownTimer from "./components/CountdownTimer";
@@ -23,8 +26,17 @@ export default function App() {
     const { pro, setPro } = useContext(ProContext);
     const [email, setEmail] = useState("");
     const [token, setToken] = useState("");
-    const [messages, setMessages] = useState([]);
-    const [premium, setPremium] = useState(false);
+    const [messages, setMessages] = useState([
+       /* {
+            id: 1,
+            from: {
+           address:   "Testing the inbox 📥"
+            },
+            subject:
+                "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur, nemo corporis temporibus possimus. Placeat iste quae, maiores fuga culpa. Natus accusamus, deserunt itaque numquam velit dolorum illo unde dolores ex!"
+        }*/
+    ]);
+    const [premium, setPremium] = useState(false); // Add this line
 
     // Initialize 10-min email
     async function initEmail() {
@@ -36,13 +48,20 @@ export default function App() {
         const { token } = await getToken(address, password);
         setEmail(address);
         setToken(token);
+        setPremium(false); // Reset premium status when creating new temp email
     }
 
     // Premium Sonjj email
     async function initPremium() {
-        const res = await createSonjj();
-        setEmail(res.email);
-        setPremium(true);
+        try {
+            const res = await createEmail();
+            setEmail(res.email);
+            setPremium(true);
+            setPro(true); // Update ProContext
+        } catch (error) {
+            console.error("Failed to create premium email:", error);
+            alert("Failed to upgrade to premium. Please try again.");
+        }
     }
 
     // Fetch inbox
@@ -84,7 +103,8 @@ export default function App() {
                         <title>TempMail SPA</title>
                         <meta
                             name='description'
-                            content='Free temporary email with 10 minutes validity. Premium upgrade available.'
+                            content='
+                            Free temporary email with 10 minutes validity. Premium upgrade available.'
                         />
                     </Helmet>
                     <Nav />
@@ -116,15 +136,15 @@ export default function App() {
                         <div className='md:grid md:grid-cols-2 md:items-center md:justify-center'>
                             <EmailDisplay email={email} />
                             <CountdownTimer
-                                duration={premium ? 86400 : 600}
+                                duration={pro ? 86400 : 600}
                                 onExpire={() =>
-                                    premium ? initPremium() : initEmail()
+                                    pro ? initPremium() : initEmail()
                                 }
                             />
                         </div>
                         <InboxPanel messages={messages} />
-                        <UpgradeButton onUpgrade={initPremium} />
                         <AdSenseBanner />
+                        <UpgradeButton onUpgrade={initPremium} />
                     </main>
                 </div>
             </ProContextProvider>

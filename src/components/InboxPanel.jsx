@@ -1,6 +1,6 @@
 export default function InboxPanel({ messages }) {
     return (
-        <div className='bg-white shadow rounded p-4 max-full mx-auto min-h-[300px]'>
+        <div className='bg-white shadow rounded p-4 max-full mx-auto min-h-[300px] mb-6'>
             <h2 className='text-lg font-semibold mb-2'>Inbox</h2>
             {messages.length === 0 ? (
                 <>
@@ -14,12 +14,15 @@ export default function InboxPanel({ messages }) {
                     {messages.map(msg => (
                         <li
                             key={msg.id}
-                            className='border-b py-2 flex justify-between items-center'
+                            className='border-b py-2 flex flex-col gap-3'
                         >
-                            <span className='font-medium'>
-                                {msg.from?.address}
+                            <span className="font-black text-2xl">
+                                <b>From:</b> {msg.from.address}
+                                {/*******?*/}
                             </span>
-                            <span>{msg.subject}</span>
+                            <span>
+                                <b>Subject:</b> {msg.subject}
+                            </span>
                         </li>
                     ))}
                 </ul>
